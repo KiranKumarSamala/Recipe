@@ -7,7 +7,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -120,5 +122,17 @@ class RecipeApplicationTests {
 		mvc.perform(get("/recipe?search=Chili").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
 				.andExpect(jsonPath("$.size()").value(0));
+	}
+	
+	@Test
+	void shouldReadCategories() throws Exception {
+
+		Set<String> categoriesList = new HashSet<>(Arrays.asList("Chili", "Main dish","Liquor", "Cakes"));
+
+		Mockito.when(recipeService.getCategories()).thenReturn(categoriesList);
+		mvc.perform(get("/recipe/categories").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.size()").value(4));
+
 	}
 }

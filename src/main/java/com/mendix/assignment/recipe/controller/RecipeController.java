@@ -4,6 +4,7 @@
 package com.mendix.assignment.recipe.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,5 +67,14 @@ public class RecipeController {
 		
 	}
 	
+	/**
+	 * getCategories will return list of unique categories across all the recipes
+	 * 
+	 * @return
+	 */
+	@GetMapping("/categories")
+	public ResponseEntity<Set<String>> getCategories() {
+		return new ResponseEntity<>(recipeService.getCategories(), HttpStatus.OK);
+	}
 
 }

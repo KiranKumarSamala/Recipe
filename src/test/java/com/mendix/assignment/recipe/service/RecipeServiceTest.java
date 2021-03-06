@@ -4,11 +4,13 @@
 package com.mendix.assignment.recipe.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -119,5 +121,20 @@ class RecipeServiceTest {
 
 		Mockito.when(recipeCacheService.getRecipesCache()).thenReturn(recipleml);
 		assertEquals(0, recipeService.findByCategory("Vegetables").size());
+	}
+	
+	@Test
+	void shouldGetAllCategories() {
+		Mockito.when(recipeCacheService.getRecipesCache()).thenReturn(recipemlSample);
+		Set<String> categoriesResult = recipeService.getCategories();
+		
+		assertEquals(4, categoriesResult.size());
+		
+		assertTrue(categoriesResult.contains("Microwave"));
+		assertTrue(categoriesResult.contains("Vegetables"));
+		assertTrue(categoriesResult.contains("Liquor"));
+		assertTrue(categoriesResult.contains("Cakes"));
+
+
 	}
 }

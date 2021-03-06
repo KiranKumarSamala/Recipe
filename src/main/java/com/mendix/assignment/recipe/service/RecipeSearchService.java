@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.mendix.assignment.recipe.model.Recipeml;
 import com.mendix.assignment.recipe.util.RecipeHelper;
@@ -17,6 +18,7 @@ import com.mendix.assignment.recipe.util.RecipeHelper;
  * @author kiran
  *
  */
+@Service
 public class RecipeSearchService {
 
 
