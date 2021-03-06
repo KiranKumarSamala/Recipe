@@ -101,4 +101,23 @@ class RecipeServiceTest {
 		Mockito.when(recipeCacheService.getRecipesCache()).thenReturn(recipleml);
 		assertEquals(0, recipeService.getRecipes().size());
 	}
+	
+	@Test
+	void shouldFindRecipesByCategory() {
+
+		Mockito.when(recipeCacheService.getRecipesCache()).thenReturn(recipemlSample);
+		List<Recipeml> findByCategoryResult = recipeService.findByCategory("Vegetables");
+		assertEquals(2, findByCategoryResult.size());
+		assertEquals("Another Zucchini Dish", findByCategoryResult.get(0).getRecipe().getHead().getTitle());
+		assertEquals("Another Potato Dish", findByCategoryResult.get(1).getRecipe().getHead().getTitle());
+
+	}
+	
+	@Test
+	void shouldReturnEmptyRecipesIfCategoryNotFOund() {
+		List<Recipeml> recipleml = new ArrayList<>();
+
+		Mockito.when(recipeCacheService.getRecipesCache()).thenReturn(recipleml);
+		assertEquals(0, recipeService.findByCategory("Vegetables").size());
+	}
 }

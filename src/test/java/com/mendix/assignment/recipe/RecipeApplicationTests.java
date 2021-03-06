@@ -22,6 +22,7 @@ import com.mendix.assignment.recipe.model.Category;
 import com.mendix.assignment.recipe.model.Head;
 import com.mendix.assignment.recipe.model.Recipe;
 import com.mendix.assignment.recipe.model.Recipeml;
+import com.mendix.assignment.recipe.service.RecipeSearchService;
 import com.mendix.assignment.recipe.service.RecipeService;
 
 @WebMvcTest(controllers = RecipeController.class)
@@ -32,6 +33,9 @@ class RecipeApplicationTests {
 
 	@MockBean
 	private RecipeService recipeService;
+	
+	@MockBean
+	private RecipeSearchService recipeSearchService;
 
 	private static Recipeml createRecipe(List<String> categoryList, String title) {
 
@@ -68,4 +72,53 @@ class RecipeApplicationTests {
 
 	}
 
+	@Test
+	void shouldFilterRecipeByCategory() throws Exception {
+
+		List<Recipeml> recipemlSample = new ArrayList<>();
+
+		recipemlSample.add(createRecipe(Arrays.asList("Chili", "Main dish"), "30 Minute Chili"));
+
+		Mockito.when(recipeService.findByCategory(Mockito.anyString())).thenReturn(recipemlSample);
+		mvc.perform(get("/recipe?category=30 Minute Chili").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.size()").value(1))
+				.andExpect(jsonPath("$[0].recipe.head.title").value("30 Minute Chili"));
+	}
+	
+	@Test
+	void shouldReturnEmptyListFilterRecipeByCategory() throws Exception {
+
+		List<Recipeml> recipemlSample = new ArrayList<>();
+
+		Mockito.when(recipeService.findByCategory(Mockito.anyString())).thenReturn(recipemlSample);
+		mvc.perform(get("/recipe?category=30 Minute Chili").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.size()").value(0));
+	}
+
+	@Test
+	void shouldSearchRecipes() throws Exception {
+
+		List<Recipeml> recipemlSample = new ArrayList<>();
+
+		recipemlSample.add(createRecipe(Arrays.asList("Chili", "Main dish"), "30 Minute Chili"));
+
+		Mockito.when(recipeSearchService.searchInRecipe(Mockito.anyString())).thenReturn(recipemlSample);
+		mvc.perform(get("/recipe?search=Chili").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.size()").value(1))
+				.andExpect(jsonPath("$[0].recipe.head.title").value("30 Minute Chili"));
+	}
+
+	@Test
+	void shouldReturnEmptyListWhenSearchNotFound() throws Exception {
+
+		List<Recipeml> recipemlSample = new ArrayList<>();
+
+		Mockito.when(recipeSearchService.searchInRecipe(Mockito.anyString())).thenReturn(recipemlSample);
+		mvc.perform(get("/recipe?search=Chili").contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.size()").value(0));
+	}
 }
