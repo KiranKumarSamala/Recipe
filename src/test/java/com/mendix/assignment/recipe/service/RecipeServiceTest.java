@@ -4,6 +4,8 @@
 package com.mendix.assignment.recipe.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.mendix.assignment.recipe.error.InvalidRecipeExpcetion;
 import com.mendix.assignment.recipe.model.Category;
 import com.mendix.assignment.recipe.model.Directions;
 import com.mendix.assignment.recipe.model.Head;
@@ -135,6 +138,157 @@ class RecipeServiceTest {
 		assertTrue(categoriesResult.contains("Liquor"));
 		assertTrue(categoriesResult.contains("Cakes"));
 
+	}
+	
+	@Test
+	void shouldSaveNewRecipe() {
+ 
+		List<Recipeml> recipeList = new ArrayList<>();
+		recipeList.addAll(createRecipes());
+		Recipeml recipeml = createRecipe(Arrays.asList("Vegetables"), "Sandwich");
 
+		Mockito.when(recipeCacheService.getRecipesCache()).thenReturn(recipeList);
+		assertNotNull(recipeService.saveRecipe(recipeml));
+	}
+	
+	@Test
+	void shouldThrowExceptionWhenRecipeIsNull() {
+ 
+		List<Recipeml> recipeList = new ArrayList<>();
+		recipeList.addAll(createRecipes());
+		
+		Recipeml recipeml = createRecipe(Arrays.asList("Vegetables"), "Sandwich");
+		recipeml.setRecipe(null);
+
+		Mockito.when(recipeCacheService.getRecipesCache()).thenReturn(recipeList);
+		List<String> errorMsg = assertThrows(InvalidRecipeExpcetion.class, () -> {
+			recipeService.saveRecipe(recipeml);
+		}).getErrorMessages();
+		
+		assertTrue(errorMsg.contains("No Recipe Found"));
+	}
+	
+	@Test
+	void shouldThrowExceptionWhenHeadIsNull() {
+ 
+		List<Recipeml> recipeList = new ArrayList<>();
+		recipeList.addAll(createRecipes());
+		
+		Recipeml recipeml = createRecipe(Arrays.asList("Vegetables"), "Sandwich");
+		recipeml.getRecipe().setHead(null);
+
+		Mockito.when(recipeCacheService.getRecipesCache()).thenReturn(recipeList);
+		List<String> errorMsg = assertThrows(InvalidRecipeExpcetion.class, () -> {
+			recipeService.saveRecipe(recipeml);
+		}).getErrorMessages();
+		
+		assertTrue(errorMsg.contains("Recipe head with title / category is missing"));
+	}
+	
+	@Test
+	void shouldThrowExceptionWhenTitleIsNull() {
+ 
+		List<Recipeml> recipeList = new ArrayList<>();
+		recipeList.addAll(createRecipes());
+		
+		Recipeml recipeml = createRecipe(Arrays.asList("Vegetables"), "Sandwich");
+		recipeml.getRecipe().getHead().setTitle(null);
+
+		Mockito.when(recipeCacheService.getRecipesCache()).thenReturn(recipeList);
+		List<String> errorMsg = assertThrows(InvalidRecipeExpcetion.class, () -> {
+			recipeService.saveRecipe(recipeml);
+		}).getErrorMessages();
+		
+		assertTrue(errorMsg.contains("Recipe title is missing"));
+	}
+	
+	@Test
+	void shouldThrowExceptionWhenTitleAlreadyExists() {
+ 
+		List<Recipeml> recipeList = new ArrayList<>();
+		recipeList.addAll(createRecipes());
+		
+		Recipeml recipeml = createRecipe(Arrays.asList("Vegetables"), "Sandwich");
+		recipeml.getRecipe().getHead().setTitle("Amaretto Cake");
+
+		Mockito.when(recipeCacheService.getRecipesCache()).thenReturn(recipeList);
+		List<String> errorMsg = assertThrows(InvalidRecipeExpcetion.class, () -> {
+			recipeService.saveRecipe(recipeml);
+		}).getErrorMessages();
+		
+		assertTrue(errorMsg.contains("Recipe title already exists"));
+	}
+
+
+	@Test
+	void shouldThrowExceptionWhenCategoryIsNull() {
+	
+		List<Recipeml> recipeList = new ArrayList<>();
+		recipeList.addAll(createRecipes());
+		
+		Recipeml recipeml = createRecipe(Arrays.asList("Vegetables"), "Sandwich");
+		recipeml.getRecipe().getHead().setCategories(null);
+	
+		Mockito.when(recipeCacheService.getRecipesCache()).thenReturn(recipeList);
+		List<String> errorMsg = assertThrows(InvalidRecipeExpcetion.class, () -> {
+			recipeService.saveRecipe(recipeml);
+		}).getErrorMessages();
+		
+		assertTrue(errorMsg.contains("Recipe category is missing"));
+	}
+	
+	@Test
+	void shouldThrowExceptionWhenIngredientIsNull() {
+	
+		List<Recipeml> recipeList = new ArrayList<>();
+		recipeList.addAll(createRecipes());
+		
+		Recipeml recipeml = createRecipe(Arrays.asList("Vegetables"), "Sandwich");
+		recipeml.getRecipe().setIngredients(null);
+	
+		Mockito.when(recipeCacheService.getRecipesCache()).thenReturn(recipeList);
+		List<String> errorMsg = assertThrows(InvalidRecipeExpcetion.class, () -> {
+			recipeService.saveRecipe(recipeml);
+		}).getErrorMessages();
+		
+		assertTrue(errorMsg.contains("Ingredients is missing"));
+		
+		
+		recipeml.getRecipe().setIngredients(new Ingredients());
+		Mockito.when(recipeCacheService.getRecipesCache()).thenReturn(recipeList);
+		errorMsg = assertThrows(InvalidRecipeExpcetion.class, () -> {
+			recipeService.saveRecipe(recipeml);
+		}).getErrorMessages();
+		
+		assertTrue(errorMsg.contains("Ingredients is missing"));
+		
+	}
+	
+	
+	@Test
+	void shouldThrowExceptionWhenStepsIsNull() {
+	
+		List<Recipeml> recipeList = new ArrayList<>();
+		recipeList.addAll(createRecipes());
+		
+		Recipeml recipeml = createRecipe(Arrays.asList("Vegetables"), "Sandwich");
+		recipeml.getRecipe().setDirections(null);
+	
+		Mockito.when(recipeCacheService.getRecipesCache()).thenReturn(recipeList);
+		List<String> errorMsg = assertThrows(InvalidRecipeExpcetion.class, () -> {
+			recipeService.saveRecipe(recipeml);
+		}).getErrorMessages();
+		
+		assertTrue(errorMsg.contains("Steps for recipe is missing"));
+		
+		
+		recipeml.getRecipe().setDirections(new Directions());
+		Mockito.when(recipeCacheService.getRecipesCache()).thenReturn(recipeList);
+		errorMsg = assertThrows(InvalidRecipeExpcetion.class, () -> {
+			recipeService.saveRecipe(recipeml);
+		}).getErrorMessages();
+		
+		assertTrue(errorMsg.contains("Steps for recipe is missing"));
+		
 	}
 }

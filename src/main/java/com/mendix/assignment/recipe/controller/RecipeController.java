@@ -9,6 +9,8 @@ import java.util.Set;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -77,4 +79,14 @@ public class RecipeController {
 		return new ResponseEntity<>(recipeService.getCategories(), HttpStatus.OK);
 	}
 
+	/**
+	 * saveRecipe will save the given recipe to cache
+	 * 
+	 * @param recipe
+	 * @return
+	 */
+	@PostMapping
+	public ResponseEntity<Recipeml> saveRecipe(@RequestBody Recipeml recipe) {
+		return new ResponseEntity<>(recipeService.saveRecipe(recipe),HttpStatus.OK);
+	}
 }

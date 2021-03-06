@@ -1,6 +1,7 @@
 package com.mendix.assignment.recipe;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -19,6 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mendix.assignment.recipe.controller.RecipeController;
 import com.mendix.assignment.recipe.model.Category;
 import com.mendix.assignment.recipe.model.Head;
@@ -135,4 +137,28 @@ class RecipeApplicationTests {
 				.andExpect(jsonPath("$.size()").value(4));
 
 	}
+	
+	@Test
+	void shoulSaveRecipe() throws Exception {
+
+		Recipeml recipeml = createRecipe(Arrays.asList("Chili", "Main dish"), "30 Minute Chili");
+
+		Mockito.when(recipeService.saveRecipe(Mockito.any())).thenReturn(recipeml);
+		mvc.perform(post("/recipe")
+				.content(asJsonString(recipeml))
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+				.andExpect(jsonPath("$.size()").value(1));
+
+	}
+	
+	public static String asJsonString(final Object obj) {
+	    try {
+	        final ObjectMapper mapper = new ObjectMapper();
+	        final String jsonContent = mapper.writeValueAsString(obj);
+	        return jsonContent;
+	    } catch (Exception e) {
+	        throw new RuntimeException(e);
+	    }
+	}  
 }

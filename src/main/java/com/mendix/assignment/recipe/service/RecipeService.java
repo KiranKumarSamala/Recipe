@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.mendix.assignment.recipe.model.Recipeml;
 import com.mendix.assignment.recipe.util.RecipeHelper;
+import com.mendix.assignment.recipe.util.ValidateRecipe;
 
 /**
  * RecipeService provides services required for controller to read recipes from cache
@@ -65,4 +66,15 @@ public class RecipeService {
 				.collect(Collectors.toSet());
 	}
 
+	/**
+	 * saveRecipe will save the given recipe to cache
+	 * 
+	 * @param recipe
+	 * @return
+	 */
+	public Recipeml saveRecipe(Recipeml recipe) {
+		ValidateRecipe.validateNewRecipe(recipe, recipeCacheService.getRecipesCache());
+		recipeCacheService.getRecipesCache().add(recipe);
+		return recipe;
+	}
 }
